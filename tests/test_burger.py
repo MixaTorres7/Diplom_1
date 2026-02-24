@@ -37,13 +37,17 @@ def test_get_price(burger, mock_bun, mock_sauce, mock_filling):
     expected_price = BUN_PRICE * 2 + SAUCE_PRICE + FILLING_PRICE
     assert burger.get_price() == expected_price, f"Общая цена бургера {burger.get_price()} не соответствует ожидаемой {expected_price}"
 
-def test_get_receipt(burger, mock_bun, mock_sauce):
+def test_get_receipt(burger, mock_bun, mock_sauce, mock_filling):
     burger.set_buns(mock_bun)
     burger.add_ingredient(mock_sauce)
-    expected_price = BUN_PRICE * 2 + SAUCE_PRICE
-    receipt = burger.get_receipt()
-    assert all([
-        BUN_NAME_1 in receipt,
-        SAUCE_NAME in receipt,
-        f"Price: {expected_price}" in receipt
-    ]), "Чек сформирован неверно"
+    burger.add_ingredient(mock_filling)
+    expected_price = BUN_PRICE * 2 + SAUCE_PRICE + FILLING_PRICE
+    expected = (
+        f'(==== {BUN_NAME_1} ====)\n'
+        f'= sauce {SAUCE_NAME} =\n'
+        f'= filling {FILLING_NAME} =\n'
+        f'(==== {BUN_NAME_1} ====)\n'
+        f'\n'
+        f'Price: {expected_price}'
+    )
+    assert burger.get_receipt() == expected, 'Полный вывод чека не совпадает с ожидаемым'
